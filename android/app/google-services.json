@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "335153254797",
+    "project_id": "websocket-chat-42ccc",
+    "storage_bucket": "websocket-chat-42ccc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335153254797:android:fecae8a047852231286dc4",
+        "android_client_info": {
+          "package_name": "com.example.chat_app_ayna"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB58KBXP1uF--OdHNmLJL4u_VNvrjewAO8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
