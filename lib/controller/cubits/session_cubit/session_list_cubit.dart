@@ -15,6 +15,7 @@ class SessionListCubit extends Cubit<SessionListState> {
 
   Future<void> loadSessions() async {
     try {
+      
       emit(SessionListLoading());
       final sessions = await userSessionManager.getAllSessions();
       if (sessions.isEmpty) {

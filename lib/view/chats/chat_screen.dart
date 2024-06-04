@@ -30,7 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    log('in dispose');
+    log('disposing chat screen');
     super.dispose();
   }
 

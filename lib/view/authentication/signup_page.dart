@@ -82,16 +82,22 @@ class SignUpPage extends StatelessWidget {
                       buildWhen: (previous, current) => current is AuthLoading,
                       builder: (context, state) {
                         if (state is AuthLoading) {
-                          return CupertinoButton(
-                            color: Colors.blueAccent,
+                          return ElevatedButton(
+                            style: const ButtonStyle(
+                              backgroundColor:
+                                  MaterialStatePropertyAll(Colors.blue),
+                            ),
                             onPressed: () {},
                             child: const CupertinoActivityIndicator(
                               color: Colors.white,
                             ),
                           );
                         } else {
-                          return CupertinoButton(
-                            color: Colors.blueAccent,
+                          return ElevatedButton(
+                            style: const ButtonStyle(
+                              backgroundColor:
+                                  MaterialStatePropertyAll(Colors.blue),
+                            ),
                             onPressed: () {
                               if (_formkey.currentState!.validate() &&
                                   confirmPasswordController.text ==

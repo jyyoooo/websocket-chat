@@ -70,14 +70,21 @@ class LoginPage extends StatelessWidget {
                             current is AuthLoading,
                         builder: (context, state) {
                           if (state is AuthLoading) {
-                            return CupertinoButton(
-                                color: Colors.blueAccent,
+                            return ElevatedButton(
+                                style: const ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStatePropertyAll(Colors.blue),
+                                ),
                                 child: const CupertinoActivityIndicator(
                                   color: Colors.white,
                                 ),
                                 onPressed: () {});
                           } else {
-                            return CupertinoButton(
+                            return ElevatedButton(
+                              style: const ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll(Colors.blue),
+                              ),
                               onPressed: () {
                                 if (!_formKey.currentState!.validate()) {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -90,7 +97,6 @@ class LoginPage extends StatelessWidget {
                                       password: passwordController.text));
                                 }
                               },
-                              color: Colors.blueAccent,
                               child: const Text('Login'),
                             );
                           }

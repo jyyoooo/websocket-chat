@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:chat_app_ayna/model/chat_session.dart';
 import 'package:chat_app_ayna/model/message.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 
 class UserSessionManager {
@@ -49,9 +50,10 @@ class UserSessionManager {
 
   Future<List<ChatSession>> getAllSessions() async {
     try {
-      log('In get all sessions');
-      final userBox = await Hive.openBox<ChatSession>('${userId}_sessions');
-      log('Box from getAllSessions: ${userBox.values}');
+      log('actual user id: ${FirebaseAuth.instance.currentUser!.uid}');
+      log('In get all sessions for $userId');
+      final userBox = await Hive.openBox<ChatSession>('${FirebaseAuth.instance.currentUser!.uid}_sessions');
+      log('Box from getAllSessions: ${userBox.values.map((e) => e.name)}');
       return userBox.values.toList();
     } catch (e) {
       log('Error getting all sessions: $e');
