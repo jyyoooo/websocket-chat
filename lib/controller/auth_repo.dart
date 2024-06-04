@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -31,11 +32,21 @@ class AuthRepository {
         password: password,
       );
       log('user ${userCredential.user!.email} logged in');
-      
+
       return userCredential.user;
     } catch (e) {
       log(e.toString());
       rethrow;
+    }
+  }
+
+  checkForActiveUser() async {
+    final userInstance = FirebaseAuth.instance.currentUser;
+
+    if (userInstance != null) {
+      return userInstance;
+    } else {
+      return null;
     }
   }
 }

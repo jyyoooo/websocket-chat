@@ -17,10 +17,10 @@ class LoginPage extends StatelessWidget {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is Authenticated) {
-          Navigator.push(
+          Navigator.pushReplacement(
               context,
               CupertinoPageRoute(
-                builder: (context) => SessionListScreen(),
+                builder: (context) => SessionListScreen(userId: state.user.uid),
               ));
         }
       },
@@ -100,10 +100,10 @@ class LoginPage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text('Forgot Password?'),
-                          ),
+                          // TextButton(
+                          //   onPressed: () {},
+                          //   child: const Text('Forgot Password?'),
+                          // ),
                           TextButton(
                             onPressed: () {
                               Navigator.pushReplacement(

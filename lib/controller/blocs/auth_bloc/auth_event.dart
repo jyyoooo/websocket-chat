@@ -1,10 +1,11 @@
 part of 'package:chat_app_ayna/controller/blocs/auth_bloc/auth_bloc.dart';
 
-
 abstract class AuthEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class AppStartEvent extends AuthEvent {}
 
 class SignUpRequested extends AuthEvent {
   final String email;

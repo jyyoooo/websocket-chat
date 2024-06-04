@@ -1,65 +1,73 @@
+import 'dart:developer';
+
+import 'package:chat_app_ayna/controller/blocs/session_controller.dart';
 import 'package:chat_app_ayna/controller/blocs/websocket_bloc/websocket_bloc.dart';
-import 'package:chat_app_ayna/controller/blocs/websocket_bloc/websocket_event.dart';
-import 'package:chat_app_ayna/controller/blocs/websocket_bloc/websocket_state.dart';
 import 'package:chat_app_ayna/model/message.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
-class ChatScreen extends StatelessWidget {
-  final String? sessionId;
-  ChatScreen({super.key, this.sessionId});
-  final TextEditingController _controller = TextEditingController();
+class ChatScreen extends StatefulWidget {
+  final String sessionId;
+  final String userId;
 
-  void _sendMessage(BuildContext context) {
-    if (_controller.text.isNotEmpty) {
-      context.read<WebSocketBloc>().add(SendMessage(Message(
-          sender: FirebaseAuth.instance.currentUser!.uid,
-          content: _controller.text,
-          timestamp: DateTime.now(),
-          sessionId: sessionId!)));
-      _controller.clear();
-    }
+  const ChatScreen({super.key, required this.sessionId, required this.userId});
+
+  @override
+  _ChatScreenState createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  late WebSocketBloc webSocketBloc;
+  final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    webSocketBloc = WebSocketBloc();
+    webSocketBloc.add(ConnectWebSocket(sessionID: widget.sessionId));
+  }
+
+  @override
+  void dispose() {
+    log('in dispose');
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('WebSocket Chat with BLoC'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () {
-              context.read<WebSocketBloc>().add(DisconnectWebSocket());
-            },
-          ),
-        ],
+        title: const Text('Chat'),
       ),
       body: Column(
         children: [
           Expanded(
             child: BlocBuilder<WebSocketBloc, WebSocketState>(
+              bloc: webSocketBloc,
               builder: (context, state) {
                 if (state is WebSocketConnecting) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (state is WebSocketConnected) {
-                  return const Center(child: Text('Connected'));
-                } else if (state is WebSocketDisconnected) {
-                  return const Center(child: Text('Disconnected'));
                 } else if (state is WebSocketError) {
                   return Center(child: Text('Error: ${state.error}'));
                 } else if (state is WebSocketMessageReceived) {
-                  return ListView.builder(
-                    itemCount: state.messages.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(state.messages[index].content),
-                      );
-                    },
-                  );
+                  if (state.messages.isEmpty) {
+                    return const Center(child: Text('No messages'));
+                  } else {
+                    return ListView.builder(
+                      itemCount: state.messages.length,
+                      itemBuilder: (context, index) {
+                        final message = state.messages[index];
+                        return ListTile(
+                          title: Text(message.content),
+                          subtitle: Text(
+                              DateFormat('hh:mm a').format(message.timestamp)),
+                        );
+                      },
+                    );
+                  }
                 } else {
-                  return const Center(child: Text('Unknown state'));
+                  return const Center(child: Text('No connection'));
                 }
               },
             ),
@@ -70,15 +78,27 @@ class ChatScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _controller,
+                    controller: _messageController,
                     decoration: const InputDecoration(
-                      hintText: 'Enter message',
+                      hintText: 'Enter a message...',
                     ),
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.send),
-                  onPressed: () => _sendMessage(context),
+                  onPressed: () {
+                    final messageContent = _messageController.text;
+                    if (messageContent.isNotEmpty) {
+                      final message = Message(
+                        sessionId: widget.sessionId,
+                        sender: widget.userId,
+                        content: messageContent,
+                        timestamp: DateTime.now(),
+                      );
+                      webSocketBloc.add(SendMessage(message));
+                      _messageController.clear();
+                    }
+                  },
                 ),
               ],
             ),

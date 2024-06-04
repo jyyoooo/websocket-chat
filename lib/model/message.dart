@@ -20,4 +20,22 @@ class Message extends HiveObject {
       required this.content,
       required this.timestamp,
       required this.sessionId});
+
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      sessionId: json['sessionId'],
+      sender: json['sender'],
+      content: json['content'],
+      timestamp: DateTime.parse(json['timestamp']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sessionId': sessionId,
+      'sender': sender,
+      'content': content,
+      'timestamp': timestamp.toIso8601String(),
+    };
+  }
 }
