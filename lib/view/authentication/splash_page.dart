@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:chat_app_ayna/controller/blocs/auth_bloc/auth_bloc.dart';
 import 'package:chat_app_ayna/view/authentication/login_page.dart';
-import 'package:chat_app_ayna/view/chats/session_list_screen.dart';
+import 'package:chat_app_ayna/view/chats/responsive_chat_layout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,7 +32,7 @@ class _SplashPageState extends State<SplashPage> {
             context,
             CupertinoPageRoute(
                 builder: (context) =>
-                    SessionListScreen(userId: state.user.uid)),
+                    ResponsiveChatScreen(userId: state.user.uid,)),
           );
         } else if (state is Unauthenticated) {
           log('no user found');

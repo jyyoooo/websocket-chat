@@ -34,19 +34,13 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
       _channel!.stream.listen(
         (message) async {
           log('Message runtimeType: ${message.runtimeType}');
-          if (!message.contains('Request served')) {
+          if (message is String && !message.contains('Request served')) {
             log('message: $message');
             final decodedMessage = jsonDecode(message);
             log('decoded message runtimeType: ${decodedMessage.runtimeType}');
             add(ReceiveMessage(Message.fromJson(decodedMessage)));
             log('Received message from socket: $decodedMessage');
           }
-        },
-        onDone: () {
-          // if (!isClosed) emit(WebSocketDisconnected());
-        },
-        onError: (error) {
-          // if (!isClosed) emit(WebSocketError(error.toString()));
         },
       );
     } catch (e) {
@@ -57,7 +51,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
 
     final userSessionManager = UserSessionManager();
 
-    // Load existing messages from Hive
+    // Loads existing messages from Hive
     final existingMessages =
         await userSessionManager.getMessages(event.sessionID);
     _messages.addAll(existingMessages);
@@ -71,7 +65,6 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     log('closing sink');
     await _channel?.sink.close();
     log('sink closed ');
-
     // emit(WebSocketDisconnected());
   }
 

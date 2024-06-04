@@ -11,7 +11,7 @@ class MessageInputField extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Row(
         children: [
-          Expanded(
+          const Expanded(
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Enter your message',
@@ -19,10 +19,8 @@ class MessageInputField extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.send),
-            onPressed: () {
-              // Logic to send a message
-            },
+            icon: const Icon(Icons.send),
+            onPressed: () {},
           ),
         ],
       ),

@@ -1,8 +1,7 @@
-import 'dart:developer';
-
-import 'package:chat_app_ayna/controller/blocs/user_session_manager.dart';
 import 'package:chat_app_ayna/controller/blocs/websocket_bloc/websocket_bloc.dart';
 import 'package:chat_app_ayna/model/message.dart';
+import 'package:chat_app_ayna/view/authentication/widgets/custom_text_field.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    log('disposing chat screen');
+    _messageController.dispose();
     super.dispose();
   }
 
@@ -39,15 +38,16 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat'),
+      
       ),
       body: Column(
-        children: [
+        children: <Widget>[
           Expanded(
             child: BlocBuilder<WebSocketBloc, WebSocketState>(
               bloc: webSocketBloc,
               builder: (context, state) {
                 if (state is WebSocketConnecting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: CupertinoActivityIndicator());
                 } else if (state is WebSocketError) {
                   return Center(child: Text('Error: ${state.error}'));
                 } else if (state is WebSocketMessageReceived) {
@@ -58,10 +58,46 @@ class _ChatScreenState extends State<ChatScreen> {
                       itemCount: state.messages.length,
                       itemBuilder: (context, index) {
                         final message = state.messages[index];
-                        return ListTile(
-                          title: Text(message.content),
-                          subtitle: Text(
-                              DateFormat('hh:mm a').format(message.timestamp)),
+                        final bool isCurrentUser = index % 2 == 0;
+                        return Align(
+                          alignment: isCurrentUser
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 16),
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: isCurrentUser
+                                  ? Colors.blue[200]
+                                  : Colors.grey[300],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  message.content,
+                                  style: TextStyle(
+                                    color: isCurrentUser
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('hh:mm a')
+                                      .format(message.timestamp),
+                                  style: TextStyle(
+                                    color: isCurrentUser
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     );
@@ -77,15 +113,14 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: CustomTextFormField(
+                    labelText: 'Message...',
                     controller: _messageController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter a message...',
-                    ),
+                    
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send),
+                  icon: const Icon(CupertinoIcons.arrow_up_circle_fill),
                   onPressed: () {
                     final messageContent = _messageController.text;
                     if (messageContent.isNotEmpty) {

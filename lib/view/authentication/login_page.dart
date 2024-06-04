@@ -1,10 +1,13 @@
 import 'package:chat_app_ayna/controller/blocs/auth_bloc/auth_bloc.dart';
 import 'package:chat_app_ayna/utils/validators.dart';
 import 'package:chat_app_ayna/view/authentication/signup_page.dart';
-import 'package:chat_app_ayna/view/chats/session_list_screen.dart';
+import 'package:chat_app_ayna/view/chats/responsive_chat_layout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'widgets/custom_elevated_button.dart';
+import 'widgets/custom_text_field.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -20,7 +23,8 @@ class LoginPage extends StatelessWidget {
           Navigator.pushReplacement(
               context,
               CupertinoPageRoute(
-                builder: (context) => SessionListScreen(userId: state.user.uid),
+                builder: (context) =>
+                    ResponsiveChatScreen(userId: state.user.uid),
               ));
         }
       },
@@ -46,22 +50,16 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
+                      CustomTextFormField(
+                        labelText: 'Email',
                         controller: emailController,
                         validator: emailValidation,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Email',
-                        ),
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
+                      CustomTextFormField(
+                        labelText: 'Password',
                         controller: passwordController,
                         validator: passwordValidation,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Password',
-                        ),
                         obscureText: true,
                       ),
                       const SizedBox(height: 20),
@@ -70,57 +68,43 @@ class LoginPage extends StatelessWidget {
                             current is AuthLoading,
                         builder: (context, state) {
                           if (state is AuthLoading) {
-                            return ElevatedButton(
-                                style: const ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStatePropertyAll(Colors.blue),
-                                ),
+                            return CustomElevatedButton(
                                 child: const CupertinoActivityIndicator(
                                   color: Colors.white,
                                 ),
                                 onPressed: () {});
                           } else {
-                            return ElevatedButton(
-                              style: const ButtonStyle(
-                                backgroundColor:
-                                    MaterialStatePropertyAll(Colors.blue),
-                              ),
+                            return CustomElevatedButton(
                               onPressed: () {
                                 if (!_formKey.currentState!.validate()) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                           content: Text(
-                                              'Email and Password is required')));
+                                              'Email and Password are required')));
                                 } else {
                                   context.read<AuthBloc>().add(LoginRequested(
                                       email: emailController.text,
                                       password: passwordController.text));
                                 }
                               },
-                              child: const Text('Login'),
+                              child: const Text('Login',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
                             );
                           }
                         },
                       ),
                       const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // TextButton(
-                          //   onPressed: () {},
-                          //   child: const Text('Forgot Password?'),
-                          // ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignUpPage(),
-                                  ));
-                            },
-                            child: const Text('Dont have an account? Sign Up'),
-                          ),
-                        ],
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SignUpPage(),
+                              ));
+                        },
+                        child: const Text('Dont have an account? Sign Up'),
                       ),
                     ],
                   ),

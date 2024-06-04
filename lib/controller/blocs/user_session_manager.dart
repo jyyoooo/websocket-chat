@@ -7,9 +7,9 @@ import 'package:hive/hive.dart';
 class UserSessionManager {
   String? userId = FirebaseAuth.instance.currentUser!.uid;
 
-  // dispose() {
-  //   userId = null;
-  // }
+  dispose() {
+    userId = null;
+  }
 
   Future<void> createSession(String sessionId, String sessionName) async {
     try {

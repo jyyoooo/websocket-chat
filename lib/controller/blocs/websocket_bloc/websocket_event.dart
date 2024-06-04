@@ -8,7 +8,7 @@ abstract class WebSocketEvent extends Equatable {
 
 class ConnectWebSocket extends WebSocketEvent {
   final String sessionID;
-  ConnectWebSocket({required this.sessionID});
+  const ConnectWebSocket({required this.sessionID});
 }
 
 class DisconnectWebSocket extends WebSocketEvent {}
