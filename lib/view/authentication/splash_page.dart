@@ -31,8 +31,9 @@ class _SplashPageState extends State<SplashPage> {
           Navigator.pushReplacement(
             context,
             CupertinoPageRoute(
-                builder: (context) =>
-                    ResponsiveChatScreen(userId: state.user.uid,)),
+                builder: (context) => ResponsiveChatScreen(
+                      userId: state.user.uid,
+                    )),
           );
         } else if (state is Unauthenticated) {
           log('no user found');
@@ -46,9 +47,12 @@ class _SplashPageState extends State<SplashPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            '''WebSocket Chat
-      Loading...''',
+            'WebSocket Chat',
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Loading...',
+            style: TextStyle(color: Colors.grey),
           ),
           SizedBox(height: 15),
           CupertinoActivityIndicator()

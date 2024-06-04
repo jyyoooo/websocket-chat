@@ -82,7 +82,7 @@ class SignUpPage extends StatelessWidget {
                       // Signup button handles the form validation and proceeds with the create user event
                       BlocBuilder<AuthBloc, AuthState>(
                         buildWhen: (previous, current) =>
-                            current is AuthLoading,
+                            current is AuthLoading || current is! AuthLoading,
                         builder: (context, state) {
                           if (state is AuthLoading) {
                             return CustomElevatedButton(

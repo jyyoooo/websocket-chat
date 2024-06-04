@@ -26,6 +26,9 @@ class LoginPage extends StatelessWidget {
                 builder: (context) =>
                     ResponsiveChatScreen(userId: state.user.uid),
               ));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Login Failed, Check Credentials')));
         }
       },
       child: Scaffold(
@@ -65,7 +68,7 @@ class LoginPage extends StatelessWidget {
                       const SizedBox(height: 20),
                       BlocBuilder<AuthBloc, AuthState>(
                         buildWhen: (previous, current) =>
-                            current is AuthLoading,
+                            current is AuthLoading || current is! AuthLoading,
                         builder: (context, state) {
                           if (state is AuthLoading) {
                             return CustomElevatedButton(
