@@ -52,6 +52,7 @@ class _WideLayoutState extends State<WideLayout> {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   String? selectedSessionId;
 
+  //this method takes callsback the sessionid from the SessionListScreen to push the ChatScreen widget to the widelayout
   void _onSessionSelected(String sessionId) {
     setState(() {
       selectedSessionId = sessionId;
