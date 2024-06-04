@@ -38,7 +38,6 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat'),
-      
       ),
       body: Column(
         children: <Widget>[
@@ -54,53 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (state.messages.isEmpty) {
                     return const Center(child: Text('No messages'));
                   } else {
-                    return ListView.builder(
-                      itemCount: state.messages.length,
-                      itemBuilder: (context, index) {
-                        final message = state.messages[index];
-                        final bool isCurrentUser = index % 2 == 0;
-                        return Align(
-                          alignment: isCurrentUser
-                              ? Alignment.centerRight
-                              : Alignment.centerLeft,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 16),
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 8),
-                            decoration: BoxDecoration(
-                              color: isCurrentUser
-                                  ? Colors.blue[200]
-                                  : Colors.grey[300],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  message.content,
-                                  style: TextStyle(
-                                    color: isCurrentUser
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                                Text(
-                                  DateFormat('hh:mm a')
-                                      .format(message.timestamp),
-                                  style: TextStyle(
-                                    color: isCurrentUser
-                                        ? Colors.white
-                                        : Colors.black,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
+                    return _messagesBuilder(state);
                   }
                 } else {
                   return const Center(child: Text('No connection'));
@@ -108,38 +61,83 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
+          _createAndSendMessageWidgets(),
+        ],
+      ),
+    );
+  }
+
+  //refactored widgets
+
+  Widget _createAndSendMessageWidgets() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: CustomTextFormField(
+              labelText: 'Message...',
+              controller: _messageController,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(CupertinoIcons.arrow_up_circle_fill),
+            onPressed: () {
+              final messageContent = _messageController.text;
+              if (messageContent.isNotEmpty) {
+                final message = Message(
+                  sessionId: widget.sessionId,
+                  sender: widget.userId,
+                  content: messageContent,
+                  timestamp: DateTime.now(),
+                );
+                webSocketBloc.add(SendMessage(message));
+                _messageController.clear();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _messagesBuilder(WebSocketMessageReceived state) {
+    return ListView.builder(
+      itemCount: state.messages.length,
+      itemBuilder: (context, index) {
+        final message = state.messages[index];
+        final bool isCurrentUser = index % 2 == 0;
+        return Align(
+          alignment:
+              isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            decoration: BoxDecoration(
+              color: isCurrentUser ? Colors.blue[200] : Colors.grey[300],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: CustomTextFormField(
-                    labelText: 'Message...',
-                    controller: _messageController,
-                    
+                Text(
+                  message.content,
+                  style: TextStyle(
+                    color: isCurrentUser ? Colors.white : Colors.black,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(CupertinoIcons.arrow_up_circle_fill),
-                  onPressed: () {
-                    final messageContent = _messageController.text;
-                    if (messageContent.isNotEmpty) {
-                      final message = Message(
-                        sessionId: widget.sessionId,
-                        sender: widget.userId,
-                        content: messageContent,
-                        timestamp: DateTime.now(),
-                      );
-                      webSocketBloc.add(SendMessage(message));
-                      _messageController.clear();
-                    }
-                  },
+                Text(
+                  DateFormat('hh:mm a').format(message.timestamp),
+                  style: TextStyle(
+                    color: isCurrentUser ? Colors.white : Colors.black,
+                    fontSize: 10,
+                  ),
                 ),
               ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

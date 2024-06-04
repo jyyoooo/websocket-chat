@@ -80,51 +80,11 @@ class SignUpPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       // Signup button handles the form validation and proceeds with the create user event
-                      BlocBuilder<AuthBloc, AuthState>(
-                        buildWhen: (previous, current) =>
-                            current is AuthLoading,
-                        builder: (context, state) {
-                          if (state is AuthLoading) {
-                            return CustomElevatedButton(
-                              onPressed: () {},
-                              child: const CupertinoActivityIndicator(
-                                color: Colors.white,
-                              ),
-                            );
-                          } else {
-                            return CustomElevatedButton(
-                              child: const Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              onPressed: () {
-                                if (_formkey.currentState!.validate() &&
-                                    confirmPasswordController.text ==
-                                        passwordController.text) {
-                                  context.read<AuthBloc>().add(SignUpRequested(
-                                        email: emailController.text,
-                                        password: passwordController.text,
-                                      ));
-                                }
-                              },
-                            );
-                          }
-                        },
-                      ),
+                      _signUpButton(),
 
                       const SizedBox(height: 20),
                       //Text button for switching to the login page
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginPage()));
-                        },
-                        child: const Text('Already have an account? Login'),
-                      ),
+                      _loginInstead(context),
                     ],
                   ),
                 ),
@@ -133,6 +93,49 @@ class SignUpPage extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  TextButton _loginInstead(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => LoginPage()));
+      },
+      child: const Text('Already have an account? Login'),
+    );
+  }
+
+  BlocBuilder<AuthBloc, AuthState> _signUpButton() {
+    return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (previous, current) => current is AuthLoading,
+      builder: (context, state) {
+        if (state is AuthLoading) {
+          return CustomElevatedButton(
+            onPressed: () {},
+            child: const CupertinoActivityIndicator(
+              color: Colors.white,
+            ),
+          );
+        } else {
+          return CustomElevatedButton(
+            child: const Text(
+              'Sign Up',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            onPressed: () {
+              if (_formkey.currentState!.validate() &&
+                  confirmPasswordController.text == passwordController.text) {
+                context.read<AuthBloc>().add(SignUpRequested(
+                      email: emailController.text,
+                      password: passwordController.text,
+                    ));
+              }
+            },
+          );
+        }
+      },
     );
   }
 }

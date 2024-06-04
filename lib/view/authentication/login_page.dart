@@ -19,6 +19,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        //if the login is successfull user is navigated to the responsive chatscreen which shows the SessionListScreen
         if (state is Authenticated) {
           Navigator.pushReplacement(
               context,
@@ -63,49 +64,13 @@ class LoginPage extends StatelessWidget {
                         obscureText: true,
                       ),
                       const SizedBox(height: 20),
-                      BlocBuilder<AuthBloc, AuthState>(
-                        buildWhen: (previous, current) =>
-                            current is AuthLoading,
-                        builder: (context, state) {
-                          if (state is AuthLoading) {
-                            return CustomElevatedButton(
-                                child: const CupertinoActivityIndicator(
-                                  color: Colors.white,
-                                ),
-                                onPressed: () {});
-                          } else {
-                            return CustomElevatedButton(
-                              onPressed: () {
-                                if (!_formKey.currentState!.validate()) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Email and Password are required')));
-                                } else {
-                                  context.read<AuthBloc>().add(LoginRequested(
-                                      email: emailController.text,
-                                      password: passwordController.text));
-                                }
-                              },
-                              child: const Text('Login',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold)),
-                            );
-                          }
-                        },
-                      ),
+
+                      //refactored login button that handles the login process and Form validation
+                      _loginButton(),
                       const SizedBox(height: 20),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SignUpPage(),
-                              ));
-                        },
-                        child: const Text('Dont have an account? Sign Up'),
-                      ),
+
+                      //Text button for switching to the sign up page
+                      _signUpInstead(context),
                     ],
                   ),
                 ),
@@ -114,6 +79,50 @@ class LoginPage extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  TextButton _signUpInstead(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SignUpPage(),
+            ));
+      },
+      child: const Text('Dont have an account? Sign Up'),
+    );
+  }
+
+  BlocBuilder<AuthBloc, AuthState> _loginButton() {
+    return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (previous, current) => current is AuthLoading,
+      builder: (context, state) {
+        if (state is AuthLoading) {
+          return CustomElevatedButton(
+              child: const CupertinoActivityIndicator(
+                color: Colors.white,
+              ),
+              onPressed: () {});
+        } else {
+          return CustomElevatedButton(
+            onPressed: () {
+              if (!_formKey.currentState!.validate()) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Email and Password are required')));
+              } else {
+                context.read<AuthBloc>().add(LoginRequested(
+                    email: emailController.text,
+                    password: passwordController.text));
+              }
+            },
+            child: const Text('Login',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
+          );
+        }
+      },
     );
   }
 }
