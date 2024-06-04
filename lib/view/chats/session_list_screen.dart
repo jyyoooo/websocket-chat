@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'package:chat_app_ayna/controller/blocs/auth_bloc/auth_bloc.dart';
+import 'package:chat_app_ayna/controller/blocs/user_session_manager.dart';
 import 'package:chat_app_ayna/controller/cubits/chat_cubit/chat_cubit.dart';
 import 'package:chat_app_ayna/controller/cubits/session_cubit/session_list_cubit.dart';
 import 'package:chat_app_ayna/controller/cubits/theme_cubit/theme_cubit.dart';
@@ -7,12 +9,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'chat_screen.dart';
 
 class SessionListScreen extends StatelessWidget {
   final String userId;
+  final String uid = FirebaseAuth.instance.currentUser!.uid;
 
-  const SessionListScreen({super.key, required this.userId});
+  SessionListScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -21,22 +25,42 @@ class SessionListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Your Sessions',
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Your Sessions',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                FirebaseAuth.instance.currentUser!.email!,
+                style: const TextStyle(fontSize: 12),
+              ),
+            )
+          ],
         ),
         actions: [
           BlocBuilder<ThemeCubit, bool>(
             builder: (context, state) => IconButton(
                 onPressed: () => context.read<ThemeCubit>().toggleTheme(),
-                icon:
-                    Icon(state ? CupertinoIcons.moon : CupertinoIcons.sun_max)),
+                icon: Icon(
+                  state ? CupertinoIcons.moon : CupertinoIcons.sun_max,
+                  color: CupertinoColors.activeBlue,
+                )),
           ),
           IconButton(
               color: CupertinoColors.destructiveRed,
               onPressed: () async {
                 try {
-                  await FirebaseAuth.instance.signOut().then((value) {
+                  Hive.close();
+                  context.read<AuthBloc>().add(LogoutEvent());
+                  await FirebaseAuth.instance.signOut().then((_) {
+                    // UserSessionManager().dispose();
                     Navigator.of(context, rootNavigator: true).pushReplacement(
                       MaterialPageRoute(
                         builder: (context) => LoginPage(),
@@ -44,7 +68,7 @@ class SessionListScreen extends StatelessWidget {
                     );
                   });
                 } on FirebaseAuthException catch (error) {
-                  log(error.toString());
+                  log('FirebaseAuth Exception during logout : $error');
                 }
               },
               icon: const Icon(CupertinoIcons.square_arrow_left))

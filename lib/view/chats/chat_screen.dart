@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:chat_app_ayna/controller/blocs/session_controller.dart';
+import 'package:chat_app_ayna/controller/blocs/user_session_manager.dart';
 import 'package:chat_app_ayna/controller/blocs/websocket_bloc/websocket_bloc.dart';
 import 'package:chat_app_ayna/model/message.dart';
 import 'package:flutter/material.dart';

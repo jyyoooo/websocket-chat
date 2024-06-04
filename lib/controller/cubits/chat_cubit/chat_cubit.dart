@@ -1,13 +1,11 @@
 import 'dart:developer';
 import 'package:chat_app_ayna/model/message.dart';
-import 'package:chat_app_ayna/controller/blocs/session_controller.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chat_app_ayna/controller/blocs/user_session_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  final userSessionManager =
-      UserSessionManager(FirebaseAuth.instance.currentUser!.uid);
+  final userSessionManager = UserSessionManager();
   final String sessionId;
 
   ChatCubit(this.sessionId) : super(ChatInitial());

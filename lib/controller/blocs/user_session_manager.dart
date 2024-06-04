@@ -5,9 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 
 class UserSessionManager {
-  final String userId;
+  String? userId = FirebaseAuth.instance.currentUser!.uid;
 
-  UserSessionManager(this.userId);
+  // dispose() {
+  //   userId = null;
+  // }
 
   Future<void> createSession(String sessionId, String sessionName) async {
     try {
@@ -52,7 +54,8 @@ class UserSessionManager {
     try {
       log('actual user id: ${FirebaseAuth.instance.currentUser!.uid}');
       log('In get all sessions for $userId');
-      final userBox = await Hive.openBox<ChatSession>('${FirebaseAuth.instance.currentUser!.uid}_sessions');
+      final userBox = await Hive.openBox<ChatSession>(
+          '${FirebaseAuth.instance.currentUser!.uid}_sessions');
       log('Box from getAllSessions: ${userBox.values.map((e) => e.name)}');
       return userBox.values.toList();
     } catch (e) {

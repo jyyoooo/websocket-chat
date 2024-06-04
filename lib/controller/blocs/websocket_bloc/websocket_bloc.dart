@@ -6,8 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:chat_app_ayna/controller/blocs/session_controller.dart';
-
+import 'package:chat_app_ayna/controller/blocs/user_session_manager.dart';
 part 'websocket_event.dart';
 part 'websocket_state.dart';
 
@@ -26,27 +25,28 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     ConnectWebSocket event,
     Emitter<WebSocketState> emit,
   ) async {
-    log('Connecting WebSocket...');
+    log('Connecting socket...');
     emit(WebSocketConnecting());
 
     _channel = WebSocketChannel.connect(Uri.parse('wss://echo.websocket.org'));
 
     try {
       _channel!.stream.listen(
-        (message) {
-          if (_isValidJson(message)) {
+        (message) async {
+          log('Message runtimeType: ${message.runtimeType}');
+          if (!message.contains('Request served')) {
+            log('message: $message');
             final decodedMessage = jsonDecode(message);
+            log('decoded message runtimeType: ${decodedMessage.runtimeType}');
             add(ReceiveMessage(Message.fromJson(decodedMessage)));
-            log('Received message from WebSocket: $message');
-          } else {
-            log('Received non-JSON message: $message');
+            log('Received message from socket: $decodedMessage');
           }
         },
         onDone: () {
-          if (!isClosed) emit(WebSocketDisconnected());
+          // if (!isClosed) emit(WebSocketDisconnected());
         },
         onError: (error) {
-          if (!isClosed) emit(WebSocketError(error.toString()));
+          // if (!isClosed) emit(WebSocketError(error.toString()));
         },
       );
     } catch (e) {
@@ -55,8 +55,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
 
     emit(WebSocketConnected());
 
-    final userSessionManager =
-        UserSessionManager(FirebaseAuth.instance.currentUser!.uid);
+    final userSessionManager = UserSessionManager();
 
     // Load existing messages from Hive
     final existingMessages =
@@ -84,8 +83,7 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     _channel?.sink.add(messageJson);
     _messages.add(event.message);
 
-    final userSessionManager =
-        UserSessionManager(FirebaseAuth.instance.currentUser!.uid);
+    final userSessionManager = UserSessionManager();
 
     await userSessionManager.addMessage(event.message.sessionId, event.message);
     if (!isClosed) emit(WebSocketMessageReceived(List.from(_messages)));
@@ -103,21 +101,22 @@ class WebSocketBloc extends Bloc<WebSocketEvent, WebSocketState> {
     );
     _messages.add(message);
 
-    final userSessionManager =
-        UserSessionManager(FirebaseAuth.instance.currentUser!.uid);
+    final userSessionManager = UserSessionManager();
 
     await userSessionManager.addMessage(message.sessionId, message);
     if (!isClosed) emit(WebSocketMessageReceived(List.from(_messages)));
   }
 
-  bool _isValidJson(String str) {
-    try {
-      jsonDecode(str);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  }
+  // bool _isValidJson(String str) {
+  //   log('Is valid json function called');
+  //   try {
+  //     jsonDecode(str);
+  //     log('Json decode completed');
+  //     return true;
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
 
   // @override
   // Future<void> close() async {

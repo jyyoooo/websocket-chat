@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chat_app_ayna/controller/auth_repo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +18,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignUpRequested>(_onSignUpRequested);
     on<LoginRequested>(_onLoginRequested);
     on<AppStartEvent>(_appStartEvent);
+    on<LogoutEvent>(_logoutEvent);
   }
 
   void _onSignUpRequested(
@@ -63,5 +66,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       log('no user found');
       emit(Unauthenticated());
     }
+  }
+
+  FutureOr<void> _logoutEvent(LogoutEvent event, Emitter<AuthState> emit) {
+    emit(AuthInitial());
   }
 }

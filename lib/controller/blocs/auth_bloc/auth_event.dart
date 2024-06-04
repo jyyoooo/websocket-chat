@@ -7,6 +7,8 @@ abstract class AuthEvent extends Equatable {
 
 class AppStartEvent extends AuthEvent {}
 
+class LogoutEvent extends AuthEvent{}
+
 class SignUpRequested extends AuthEvent {
   final String email;
   final String password;
