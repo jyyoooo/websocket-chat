@@ -29,6 +29,7 @@ class SessionListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 70,
         automaticallyImplyLeading: false,
         title: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -49,15 +50,7 @@ class SessionListScreen extends StatelessWidget {
             )
           ],
         ),
-        actions: [
-          _themeSwitch(),
-          IconButton(
-              color: CupertinoColors.destructiveRed,
-              onPressed: () {
-                _showLogoutDialog(context);
-              },
-              icon: const Icon(CupertinoIcons.square_arrow_left))
-        ],
+        actions: [_themeSwitch(), _logoutButton(context)],
       ),
       body: BlocBuilder<SessionListCubit, SessionListState>(
         builder: (context, state) {
@@ -92,6 +85,15 @@ class SessionListScreen extends StatelessWidget {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  IconButton _logoutButton(BuildContext context) {
+    return IconButton(
+        color: CupertinoColors.destructiveRed,
+        onPressed: () {
+          _showLogoutDialog(context);
+        },
+        icon: const Icon(CupertinoIcons.square_arrow_left));
   }
 
   //REFACTORED WIDGETS
@@ -156,6 +158,12 @@ class SessionListScreen extends StatelessWidget {
           actions: <Widget>[
             TextButton(
               onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
                 final newSessionName = controller.text.trim();
                 if (newSessionName.isNotEmpty) {
                   final sessionId =
@@ -163,18 +171,12 @@ class SessionListScreen extends StatelessWidget {
                   log('session id $sessionId');
                   BlocProvider.of<SessionListCubit>(context)
                       .addSession(sessionId, newSessionName);
-
                   Navigator.pop(dialogContext);
                 }
               },
-              child: const Text('Create'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-              },
-              child: const Text('Cancel'),
-            ),
+              child: const Text('Create',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            )
           ],
         );
       },
@@ -189,6 +191,15 @@ class SessionListScreen extends StatelessWidget {
           title: const Text('Logout'),
           content: const Text('Are you sure you want to log out?'),
           actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
             TextButton(
               onPressed: () async {
                 try {
@@ -205,13 +216,10 @@ class SessionListScreen extends StatelessWidget {
                   log('FirebaseAuth Exception during logout : $error');
                 }
               },
-              child: const Text('Logout'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); 
-              },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Logout',
+                style: TextStyle(color: Colors.red),
+              ),
             ),
           ],
         );
