@@ -1,16 +1,16 @@
-# chat_app_ayna
+# WebSocket Chat App
 
-A new Flutter project.
+Feel free to try it out
+[WebSocket Chat App](https://websocket-chat-42ccc.web.app/)
 
-## Getting Started
+Welcome to the WebSocket Chat App! This project is a real-time chat application built using Flutter for the web, with BLoC for state management, WebSockets.org for the endpoint, Hive for local storage, and Firebase Authentication for user management.
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- **Real-Time Messaging**: Send and receive messages in real-time using WebSockets echo endpoint.
+- **State Management**: Manage app state efficiently using the BLoC pattern.
+- **Local Storage**: Save and load chat sessions locally using Hive.
+- **User Authentication**: Secure user login and registration with Firebase Authentication.
+- **Responsive Design**: Adaptable layout for different screen sizes, optimized for web.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
